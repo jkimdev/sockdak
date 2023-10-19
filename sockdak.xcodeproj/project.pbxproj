@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		BFCA25792AE14F2800E5A592 /* sockdak */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sockdak; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFCA257C2AE14F2800E5A592 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		BFCA25842AE1511100E5A592 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +58,7 @@
 		BFCA257B2AE14F2800E5A592 /* sockdak */ = {
 			isa = PBXGroup;
 			children = (
+				BFCA25842AE1511100E5A592 /* Common.h */,
 				BFCA257C2AE14F2800E5A592 /* main.cpp */,
 			);
 			path = sockdak;
