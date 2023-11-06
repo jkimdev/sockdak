@@ -9,41 +9,70 @@
 #include "Common.h"
 #include "AddressInfo.cpp"
 
-
 using namespace std;
 
-int socket(
-           int domain,
-           int type,
-           int protocol
-           );
-
-int close(int fd);
-
-
+const char *SERVERIP = (char *)"127.0.0.1";
+#define SERVERPORT 9000
+#define BUFSIZE 512
 
 int main(int argc, const char * argv[]) {
+    int retval;
     
-    // insert code here...
-    AddressInfo addressInfo;
-    const char *TESTNAME = "www.google.com";
-    struct in_addr addr;
+    if (argc > 1) SERVERIP = argv[1];
     
-    if (addressInfo.GetIPAddr(TESTNAME, &addr)) {
-        char str[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &addr, str, sizeof(str));
-        cout << str << endl;
-    }
-    
-    char name[256];
-    if (addressInfo.GetDomainName(addr, name, sizeof(name))) {
-        cout << name << endl;
-    }
-    
+    // create socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) err_quit("socket()");
-    printf("[notice] socket initialized successfully!");
     
-    close(sock);
-    return 0;
+    // connect
+    struct sockaddr_in serveraddr;
+    memset(&serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
+    serveraddr.sin_port = htons(SERVERPORT);
+    retval = connect(sock, (const struct sockaddr*)&serveraddr, sizeof(serveraddr));
+    if (retval == -1) err_quit("connect()");
+    
+    // communication variables
+    char buf[BUFSIZE + 1];
+    int len;
+    
+    // client to server
+    while (1) {
+        printf("\n[type:]");
+        if (fgets(buf, BUFSIZE, stdin) == NULL)
+            break;
+        
+        // remove '\n'
+        len = (int)strlen(buf);
+        if(buf[len - 1] == '\n')
+            buf[len - 1] = '\0';
+        if(strlen(buf) == 0)
+            break;
+        
+        // send data
+        retval = send(sock, buf, (int)strlen(buf), 0);
+        if (retval == -1) {
+            err_display("send()");
+            break;
+        }
+        
+        printf("[TCP Client] %d bytes has been sent", retval);
+        
+        // reveice data
+        retval = recv(sock, buf, retval, MSG_WAITALL);
+        if (retval == -1) {
+            err_display("recv()");
+            break;
+        }
+        else if (retval == 0)
+            break;
+        
+        // print received data
+        buf[retval] = '\0';
+        printf("[TCP Client] %d bytes has been received", retval);
+        printf("[data] %s\n", buf);
+        
+        close(sock);
+    }
 }
