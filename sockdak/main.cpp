@@ -70,9 +70,9 @@ int main(int argc, const char * argv[]) {
         
         // print received data
         buf[retval] = '\0';
-        printf("[TCP Client] %d bytes has been received", retval);
+        printf("[TCP Client] %d bytes has been received\n", retval);
         printf("[data] %s\n", buf);
         
-        close(sock);
     }
+    close(sock);
 }
