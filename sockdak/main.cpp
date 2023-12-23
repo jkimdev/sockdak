@@ -5,74 +5,120 @@
 //  Created by Jimmy on 2023/10/19.
 //
 
+#include <boost/asio.hpp>
 #include <iostream>
-#include "Common.h"
-#include "AddressInfo.cpp"
+
+#define SERVER_PORT 9000
 
 using namespace std;
+using namespace boost::asio;
+using namespace boost::asio::ip;
 
-const char *SERVERIP = (char *)"127.0.0.1";
-#define SERVERPORT 9000
-#define BUFSIZE 512
+
+class Client {
+    ip::tcp::endpoint ep;
+    io_service ios;
+    ip::tcp::socket sock;
+    shared_ptr<io_service::work> work;
+    boost::asio::detail::thread_group thread_group;
+    std::string sbuf;
+    std::string rbuf;
+    char buf[80];
+    mutex lock;
+    const int THREAD_SIZE = 4;
+    
+public:
+    Client(string ip_address, unsigned short port_num) :
+    ep(ip::address::from_string(ip_address), port_num),
+    sock(ios, ep.protocol()),
+    work(new io_service::work(ios)) {}
+    
+    void Start() {
+        for (int i = 0; i < THREAD_SIZE; i++)
+            thread_group.create_thread(bind(&Client::WorkerThread, this));
+        this_thread::sleep_for(boost::asio::chrono::milliseconds(100));
+        cout << "Threads Created" << endl;
+        ios.post(bind(&Client::TryConnect, this));
+    }
+    
+private:
+    void WorkerThread() {
+        lock.lock();
+        cout << "[" << this_thread::get_id() << "]" << " Thread Start" << endl;
+        lock.unlock();
+        
+        ios.run();
+    }
+    
+    void TryConnect() {
+        cout << "[" << this_thread::get_id() << "]" << " TryConnect" << endl;
+        
+        sock.async_connect(ep, bind(&Client::OnConnect, this, std::placeholders::_1));
+    }
+    
+    void OnConnect(const boost::system::error_code &ec) {
+        cout << "[" << this_thread::get_id() << "]" << " OnConnect" << endl;
+        if (ec) {
+            cout << "connect failed: " << ec.message() << endl;
+            StopAll();
+            return;
+        }
+        
+        ios.post(bind(&Client::Send, this));
+        ios.post(bind(&Client::Recieve, this));
+    }
+    
+    void Send() {
+        getline(std::cin, sbuf);
+        
+        sock.async_write_some(boost::asio::buffer(sbuf), bind(&Client::SendHandle, this, std::placeholders::_1));
+    }
+    
+    void Recieve() {
+        cout << buf << endl;
+        sock.async_read_some(boost::asio::buffer(buf, 80), bind(&Client::ReceiveHandle, this, std::placeholders::_1, std::placeholders::_2));
+    }
+    
+    void SendHandle(const boost::system::error_code &ec) {
+        if (ec) {
+            cout << "async_read_some error: " << ec.message() << endl;
+            StopAll();
+            return;
+        }
+        
+        Send();
+    }
+    
+    void ReceiveHandle(const boost::system::error_code &ec, size_t size) {
+        if (ec) {
+            cout << "async_write_some error: " << ec.message() << endl;
+            StopAll();
+            return;
+        }
+        
+        if (size == 0) {
+            return;
+        }
+        
+        buf[size] = '\0';
+        rbuf = buf;
+        
+//        lock.lock();
+//        cout << rbuf << endl;
+//        lock.unlock();
+        
+        Recieve();
+    }
+    
+    void StopAll() {
+        sock.close();
+        work.reset();
+    }
+};
 
 int main(int argc, const char * argv[]) {
-    int retval;
-    
-    if (argc > 1) SERVERIP = argv[1];
-    
-    // create socket
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) err_quit("socket()");
-    
-    // connect
-    struct sockaddr_in serveraddr;
-    memset(&serveraddr, 0, sizeof(serveraddr));
-    serveraddr.sin_family = AF_INET;
-    inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
-    serveraddr.sin_port = htons(SERVERPORT);
-    retval = connect(sock, (const struct sockaddr*)&serveraddr, sizeof(serveraddr));
-    if (retval == -1) err_quit("connect()");
-    
-    // communication variables
-    char buf[BUFSIZE + 1];
-    int len;
-    
-    // client to server
-    while (1) {
-        printf("\n[type:]");
-        if (fgets(buf, BUFSIZE, stdin) == NULL)
-            break;
-        
-        // remove '\n'
-        len = (int)strlen(buf);
-        if(buf[len - 1] == '\n')
-            buf[len - 1] = '\0';
-        if(strlen(buf) == 0)
-            break;
-        
-        // send data
-        retval = send(sock, buf, (int)strlen(buf), 0);
-        if (retval == -1) {
-            err_display("send()");
-            break;
-        }
-        
-        printf("[TCP Client] %d bytes has been sent", retval);
-        
-        // reveice data
-        retval = recv(sock, buf, retval, MSG_WAITALL);
-        if (retval == -1) {
-            err_display("recv()");
-            break;
-        }
-        else if (retval == 0)
-            break;
-        
-        // print received data
-        buf[retval] = '\0';
-        printf("[TCP Client] %d bytes has been received\n", retval);
-        printf("[data] %s\n", buf);
-        
-    }
-    close(sock);
+    Client chat("127.0.0.1", SERVER_PORT);
+    chat.Start();
+
+    return 0;
 }

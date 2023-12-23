@@ -247,6 +247,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5H679H8G3X;
 				ENABLE_HARDENED_RUNTIME = YES;
+				"FRAMEWORK_SEARCH_PATHS[arch=*]" = (
+					/opt/homebrew/Cellar/boost/1.83.0/include,
+					"/opt/homebrew/Cellar/openssl@3/3.2.0_1/include",
+				);
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/opt/homebrew/Cellar/boost/1.83.0/include,
+					"/opt/homebrew/Cellar/openssl@3/3.2.0_1/include",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -257,6 +265,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5H679H8G3X;
 				ENABLE_HARDENED_RUNTIME = YES;
+				"FRAMEWORK_SEARCH_PATHS[arch=*]" = (
+					/opt/homebrew/Cellar/boost/1.83.0/include,
+					"/opt/homebrew/Cellar/openssl@3/3.2.0_1/include",
+				);
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/opt/homebrew/Cellar/boost/1.83.0/include,
+					"/opt/homebrew/Cellar/openssl@3/3.2.0_1/include",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
