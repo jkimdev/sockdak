@@ -39,6 +39,7 @@ public:
         this_thread::sleep_for(boost::asio::chrono::milliseconds(100));
         cout << "Threads Created" << endl;
         ios.post(bind(&Client::TryConnect, this));
+        thread_group.join();
     }
     
 private:
@@ -76,7 +77,7 @@ private:
     
     void Recieve() {
         cout << buf << endl;
-        sock.async_read_some(boost::asio::buffer(buf, 80), bind(&Client::ReceiveHandle, this, std::placeholders::_1, std::placeholders::_2));
+        sock.async_read_some(boost::asio::buffer(buf, 80), bind(&Client::OnReceive, this, std::placeholders::_1, std::placeholders::_2));
     }
     
     void SendHandle(const boost::system::error_code &ec) {
@@ -89,7 +90,7 @@ private:
         Send();
     }
     
-    void ReceiveHandle(const boost::system::error_code &ec, size_t size) {
+    void OnReceive(const boost::system::error_code &ec, size_t size) {
         if (ec) {
             cout << "async_write_some error: " << ec.message() << endl;
             StopAll();
@@ -106,7 +107,6 @@ private:
 //        lock.lock();
 //        cout << rbuf << endl;
 //        lock.unlock();
-        
         Recieve();
     }
     
@@ -117,7 +117,7 @@ private:
 };
 
 int main(int argc, const char * argv[]) {
-    Client chat("127.0.0.1", SERVER_PORT);
+    Client chat("192.168.45.58", SERVER_PORT);
     chat.Start();
 
     return 0;
