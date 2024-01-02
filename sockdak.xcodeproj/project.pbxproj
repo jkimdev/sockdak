@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BFB2A5D12B44269900FD1AE1 /* client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFB2A5CF2B44269900FD1AE1 /* client.cpp */; };
 		BFCA257D2AE14F2800E5A592 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BFCA257C2AE14F2800E5A592 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -23,8 +24,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BF2420232AEC158D005444B1 /* AddressInfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AddressInfo.cpp; sourceTree = "<group>"; };
-		BF2420242AEC158D005444B1 /* AddressInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AddressInfo.hpp; sourceTree = "<group>"; };
+		BFB2A5CF2B44269900FD1AE1 /* client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = client.cpp; sourceTree = "<group>"; };
+		BFB2A5D02B44269900FD1AE1 /* client.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = client.hpp; sourceTree = "<group>"; };
 		BFCA25792AE14F2800E5A592 /* sockdak */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sockdak; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFCA257C2AE14F2800E5A592 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		BFCA25842AE1511100E5A592 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
@@ -62,8 +63,8 @@
 			children = (
 				BFCA25842AE1511100E5A592 /* Common.h */,
 				BFCA257C2AE14F2800E5A592 /* main.cpp */,
-				BF2420232AEC158D005444B1 /* AddressInfo.cpp */,
-				BF2420242AEC158D005444B1 /* AddressInfo.hpp */,
+				BFB2A5CF2B44269900FD1AE1 /* client.cpp */,
+				BFB2A5D02B44269900FD1AE1 /* client.hpp */,
 			);
 			path = sockdak;
 			sourceTree = "<group>";
@@ -125,6 +126,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFB2A5D12B44269900FD1AE1 /* client.cpp in Sources */,
 				BFCA257D2AE14F2800E5A592 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
