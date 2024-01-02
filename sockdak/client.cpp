@@ -16,27 +16,23 @@
         for (int i = 0; i < THREAD_SIZE; i++)
             thread_group.create_thread(std::bind(&Client::WorkerThread, this));
         std::this_thread::sleep_for(boost::asio::chrono::milliseconds(100));
-        std::cout << "Threads Created" << std::endl;
         ios.post(std::bind(&Client::TryConnect, this));
         thread_group.join();
     }
     
     void Client::WorkerThread() {
-        lock.lock();
-        std::cout << "[" << std::this_thread::get_id() << "]" << " Thread Start" << std::endl;
-        lock.unlock();
         
         ios.run();
     }
     
     void Client::TryConnect() {
-        std::cout << "[" << std::this_thread::get_id() << "]" << " TryConnect" << std::endl;
+        std::cout << "connecting.." << std::endl;
         
         sock.async_connect(ep, std::bind(&Client::OnConnect, this, std::placeholders::_1));
     }
     
     void Client::OnConnect(const boost::system::error_code &ec) {
-        std::cout << "[" << std::this_thread::get_id() << "]" << " OnConnect" <<  std::endl;
+        std::cout << "connected!" <<  std::endl;
         if (ec) {
             std::cout << "connect failed: " << ec.message() << std::endl;
             StopAll();
